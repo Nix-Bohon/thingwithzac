@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "thingwithzac", "thingwithzac\thingwithzac.csproj", "{45A104B6-124D-408E-8315-25794A3EA29B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45A104B6-124D-408E-8315-25794A3EA29B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A104B6-124D-408E-8315-25794A3EA29B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45A104B6-124D-408E-8315-25794A3EA29B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45A104B6-124D-408E-8315-25794A3EA29B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D0C8619C-2960-48A7-9EB9-76EB40B16C07}
+	EndGlobalSection
+EndGlobal
