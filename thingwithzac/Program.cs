@@ -12,8 +12,10 @@ namespace thingwithzac
     {
         static void Main(string[] args)
         {
-            var text = FileHandler.ReadFile("obama.txt");
-            foreach(var item in text)
+            FileHandler handler = new FileHandler("obama.txt");
+
+            var words = handler.DistinctWithoutPunctuation();
+            foreach(var item in words)
             {
                 Console.WriteLine(item);
             }
@@ -25,11 +27,13 @@ namespace thingwithzac
     public class FileHandler
     {
         private string text;
-        private const string nonPunctuationRegex = @"(\w+-\w+)|(\w+'{1}\w+)|(\w+)";
-        private const string punctuationRegex = @"(?<punctuation>\p{P})";
-        private const string combinedRegex = @"(\w+-\w+)|(\w+'{1}\w+)|(?<punctuation>\p{P})|(\w+)";
+        public const string nonPunctuationRegex = @"(\w+-\w+)|(\w+'{1}\w+)|(\w+)";
+        public const string punctuationRegex = @"(?<punctuation>\p{P})";
+        public const string withPunctuationRegex = @"(\w+-\w+)|(\w+'{1}\w+)|(?<punctuation>\p{P})|(\w+)";
+        public const string nextWordWithPunctuationRegex = @"(?<=\bend(\s|\b))((\w)+|\p{P})(?=\s)";
+        public const string nextWordRegex = @"(?<=\bend(\s|\b))(\w)+(?=\s)";
 
-        public static Func<string, bool> CheckRegEx = (string str) => Regex.IsMatch(str, punctuationRegex) &&
+        public static Func<string, string, bool> CheckRegEx = (str, regex) => Regex.IsMatch(str, regex) &&
                 !Regex.IsMatch(str, nonPunctuationRegex);
 
         public FileHandler(string filename)
@@ -49,18 +53,25 @@ namespace thingwithzac
             from Match match in matches
             select match.Value;
 
+        private IEnumerable<string> GetStringEnumeratorFromRegex(string regex, bool distinct = false)
+        {
+            var matches = Regex.Matches(this.text, regex);
+            return GetStringEnumeratorFromMatchCollection(matches);
+        }
+
         public IEnumerable<string> SplitWithPunctuation()
         {
-            var matches = Regex.Matches(this.text, combinedRegex);
-            return GetStringEnumeratorFromMatchCollection(matches);
+            return GetStringEnumeratorFromRegex(withPunctuationRegex);
         }
 
         public IEnumerable<string> DistinctWithoutPunctuation()
         {
-            var matches = Regex.Matches(this.text, nonPunctuationRegex);
-            var query = from Match match in matches
-                        select match.Value;
-            return query.Distinct();
+            return GetStringEnumeratorFromRegex(nonPunctuationRegex, true);
+        }
+
+        public IEnumerable<string> NextWordsByWord(string word)
+        {
+            return GetStringEnumeratorFromRegex(nextWordRegex, true);
         }
 
     }
@@ -101,14 +112,13 @@ namespace thingwithzac
         public FrequencyMap(IEnumerable<string> tokens)
         {
             string[] arr = tokens.ToArray();
-            var map = new FrequencyMap();
             foreach(string token in arr)
             {
-                map.Add(token, CountFrequencyByPosition(token, arr));
+                Add(token, CountFrequencyByPosition(token, arr));
             }
         }
 
-        public Frequency CountFrequencyByPosition(string word, string[] tokens)
+        public void AddItem(string word, string[] tokens)
         {
             var query =
                 from int index in tokens
@@ -132,14 +142,14 @@ namespace thingwithzac
                         break;
                 };
             }
-            return freq;
+            Add(word, )
         }
 
         private Position CheckPosition(string word, string before, string after)
         {
-            if (before == null || FileHandler.CheckRegEx(before))
+            if (before == null || FileHandler.CheckRegEx(before, FileHandler.punctuationRegex))
                 return Position.Beginning;
-            if (after == null || FileHandler.CheckRegEx(after))
+            if (after == null || FileHandler.CheckRegEx(after, FileHandler.punctuationRegex))
                 return Position.End;
             return Position.Middle;
         }
@@ -150,7 +160,10 @@ namespace thingwithzac
     {
         public WordMap(List<string> tokens)
         {
-
+            foreach(string token in tokens)
+            {
+                Add(token, new FrequencyMap(tokens))
+            }
         }
     }
 }
